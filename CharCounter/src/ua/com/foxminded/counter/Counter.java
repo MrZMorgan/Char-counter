@@ -40,13 +40,12 @@ public class Counter {
                 "Click \"Enter\" button without typing any text to close app.");
 
         String line = readString();
-        while (!line.equals("")) {
+        OUTER: while (!line.equals("")) {
             for (Map.Entry<String, String> entryCache : cache.entrySet()) {
                 if (entryCache.getKey().equals(line)) {
                     System.out.println(entryCache.getValue());
-                    System.out.println("The value is taken from the cache");
-                    System.out.println(cache.size());
-                    readString();
+                    line = readString();
+                    continue OUTER;
                 }
             }
 
