@@ -35,7 +35,7 @@ public class Counter {
         return resultMap;
     }
 
-    public void createResult() {
+    public void printResult() {
         System.out.println("Type any text and press \"Enter\" button.\n" +
                 "Click \"Enter\" button without typing any text to close app.");
 
@@ -49,20 +49,23 @@ public class Counter {
                 }
             }
 
-            Set<Character> charsUnique = getUniqueCharsFromString(line);
-            Map<Character, Integer> resultMap = createResultMap(line, charsUnique);
-
             StringBuilder result = new StringBuilder();
-
-            for (Map.Entry<Character, Integer> entry : resultMap.entrySet()) {
-                result.append(String.format("\"%c\" - %d\n", entry.getKey(), entry.getValue()));
-            }
-
-            cache.put(line, result.toString());
+            createResultForLine(line, result);
 
             System.out.println(result.toString());
             line = readString();
         }
+    }
+
+    public void createResultForLine(String line, StringBuilder result) {
+        Set<Character> charsUnique = getUniqueCharsFromString(line);
+        Map<Character, Integer> resultMap = createResultMap(line, charsUnique);
+
+        for (Map.Entry<Character, Integer> entry : resultMap.entrySet()) {
+            result.append(String.format("\"%c\" - %d\n", entry.getKey(), entry.getValue()));
+        }
+
+        cache.put(line, result.toString());
     }
 
     private String readString() {
