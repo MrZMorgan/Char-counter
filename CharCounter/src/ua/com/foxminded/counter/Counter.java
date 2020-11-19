@@ -5,13 +5,12 @@ import java.util.*;
 
 public class Counter {
     public Set<Character> getUniqueCharsFromString(String line) {
-        char[] charsIntermediate = line.toCharArray();
-        Set<Character> charsSet = new LinkedHashSet<>();
+        Set<Character> chars = new LinkedHashSet<>();
 
-        for (char c : charsIntermediate) {
-            charsSet.add(c);
+        for (int i = 0; i < line.length(); i++) {
+            chars.add(line.charAt(i));
         }
 
-        return charsSet;
+        return chars;
     }
 }
