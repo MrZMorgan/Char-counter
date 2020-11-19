@@ -3,7 +3,7 @@ package ua.com.foxminded.counter;
 import java.util.*;
 
 public class Counter {
-    public final static Map<String, String> cache = new LinkedHashMap<>();
+    private final static Map<String, String> cache = new LinkedHashMap<>();
 
     private Set<Character> getUniqueCharsFromString(String line) {
         Set<Character> charsUnique = new LinkedHashSet<>();
