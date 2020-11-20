@@ -3,8 +3,6 @@ package ua.com.foxminded.counter;
 import java.util.*;
 
 public class Counter {
-    public final Map<String, String> cache = new LinkedHashMap<>();
-
     private Set<Character> getUniqueCharsFromString(String line) {
         Set<Character> charsUnique = new LinkedHashSet<>();
 
@@ -33,32 +31,14 @@ public class Counter {
 
         return resultMap;
     }
-    
-    public String createResultForLine(String line) {
-        StringBuilder result = new StringBuilder();
+
+    public CountedDTO createCountedDtoForLine(String line) {
+        CountedDTO dto = new CountedDTO();
+
+        dto.setLine(line);
         Set<Character> charsUnique = getUniqueCharsFromString(line);
-        Map<Character, Integer> resultMap = createResultMap(line, charsUnique);
+        dto.setResultMap(createResultMap(line, charsUnique));
 
-        for (Map.Entry<Character, Integer> entry : resultMap.entrySet()) {
-            result.append(String.format("\"%c\" - %d\n", entry.getKey(), entry.getValue()));
-        }
-
-        return result.toString();
-    }
-
-    public void printResult(String line) {
-        boolean foundValueInCache = false;
-        for (Map.Entry<String, String> entryCache : cache.entrySet()) {
-            if (entryCache.getKey().equals(line)) {
-                System.out.println(entryCache.getValue());
-                foundValueInCache = true;
-            }
-        }
-
-        if (!foundValueInCache) {
-            String result = createResultForLine(line);
-            cache.put(line, result);
-            System.out.println(result);
-        }
+        return dto;
     }
 }

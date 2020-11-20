@@ -1,6 +1,9 @@
 package ua.com.foxminded.facade;
 
+import ua.com.foxminded.cache.Cache;
+import ua.com.foxminded.counter.CountedDTO;
 import ua.com.foxminded.counter.Counter;
+import ua.com.foxminded.formatter.Formatter;
 
 import java.util.Scanner;
 
@@ -17,9 +20,15 @@ public class CharCounterFacade {
     }
 
     public void printResult() {
+        Cache cache = new Cache();
+
         String line = readString();
+
         while (!line.equals("")) {
-            counter.printResult(line);
+            Counter counter = new Counter();
+            CountedDTO dto = counter.createCountedDtoForLine(line);
+            Formatter formatter = new Formatter();
+            formatter.printResult(dto, cache);
             line = readString();
         }
     }
