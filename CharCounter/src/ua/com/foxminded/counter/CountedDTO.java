@@ -10,7 +10,7 @@ public class CountedDTO {
         return line;
     }
 
-    public void setLine(String line) {
+    protected void setLine(String line) {
         this.line = line;
     }
 
@@ -18,7 +18,7 @@ public class CountedDTO {
         return resultMap;
     }
 
-    public void setResultMap(Map<Character, Integer> resultMap) {
+    protected void setResultMap(Map<Character, Integer> resultMap) {
         this.resultMap = resultMap;
     }
 }

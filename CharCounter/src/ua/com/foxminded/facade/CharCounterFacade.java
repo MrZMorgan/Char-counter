@@ -4,15 +4,11 @@ import ua.com.foxminded.cache.Cache;
 import ua.com.foxminded.counter.CountedDTO;
 import ua.com.foxminded.counter.Counter;
 import ua.com.foxminded.formatter.Formatter;
+import ua.com.foxminded.interfaces.Cacheble;
 
 import java.util.Scanner;
 
 public class CharCounterFacade {
-    private final Counter counter;
-
-    public CharCounterFacade(Counter counter) {
-        this.counter = counter;
-    }
 
     public static String readString() {
         Scanner scanner = new Scanner(System.in);
@@ -20,7 +16,7 @@ public class CharCounterFacade {
     }
 
     public void printResult() {
-        Cache cache = new Cache();
+        Cacheble cache = new Cache();
 
         String line = readString();
 

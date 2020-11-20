@@ -2,10 +2,12 @@ package ua.com.foxminded.formatter;
 
 import ua.com.foxminded.cache.Cache;
 import ua.com.foxminded.counter.CountedDTO;
+import ua.com.foxminded.interfaces.Cacheble;
+import ua.com.foxminded.interfaces.Formatable;
 
 import java.util.Map;
 
-public class Formatter {
+public class Formatter implements Formatable {
     public String createResultForLine(CountedDTO dto) {
         StringBuilder result = new StringBuilder();
         Map<Character, Integer> resultMap = dto.getResultMap();
@@ -17,7 +19,8 @@ public class Formatter {
         return result.toString();
     }
 
-    public void printResult(CountedDTO dto, Cache cache) {
+    @Override
+    public void printResult(CountedDTO dto, Cacheble cache) {
         boolean foundValueInCache = false;
         for (Map.Entry<String, String> entryCache : cache.getCacheMap().entrySet()) {
             if (entryCache.getKey().equals(dto.getLine())) {
