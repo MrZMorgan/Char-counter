@@ -1,6 +1,5 @@
 package ua.com.foxminded.formatter;
 
-import ua.com.foxminded.cache.Cache;
 import ua.com.foxminded.counter.CountedDTO;
 import ua.com.foxminded.interfaces.Cacheble;
 import ua.com.foxminded.interfaces.Formatable;
