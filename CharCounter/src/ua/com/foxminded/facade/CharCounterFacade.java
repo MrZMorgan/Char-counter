@@ -3,8 +3,6 @@ package ua.com.foxminded.facade;
 import ua.com.foxminded.cache.Cache;
 import ua.com.foxminded.counter.CountedDTO;
 import ua.com.foxminded.counter.Counter;
-import ua.com.foxminded.formatter.Formatter;
-import ua.com.foxminded.interfaces.Cacheble;
 import ua.com.foxminded.interfaces.Formatable;
 import java.util.Scanner;
 
