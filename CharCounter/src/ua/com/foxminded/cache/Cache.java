@@ -7,8 +7,13 @@ import java.util.Map;
 public class Cache implements Cacheble {
     private final Map<String, String> cache = new LinkedHashMap<>();
 
+    @Override
     public Map<String, String> getCache() {
         return cache;
+    }
+
+    public String getValueFromCache(String key) {
+        return getCache().get(key);
     }
 
     @Override

@@ -19,20 +19,22 @@ public class CharCounterFacade {
     }
 
     public void printResultForOneLine(String line) {
-        System.out.println("Type any sting and press \"Enter\" button\n" +
-                           "Do not type anything and press the \"Enter\" button to close the program");
-
         CountedDTO dto = counter.createCountedDtoForLine(line);
         if (cache.isPresented(line)) {
-            System.out.println(cache.getCache().get(line));
+            System.out.println(cache.getValueFromCache(line));
+//            System.out.println(cache.getCache().size()); //длина кэша
         } else {
             String result = formatter.formatResultForLine(dto);
             cache.put(line, result);
             System.out.println(result);
+//            System.out.println(cache.getCache().size()); //длина кэша
         }
     }
 
     public void readStringsAndPrintResult() {
+        System.out.println("Type any sting and press \"Enter\" button\n" +
+                           "Do not type anything and press the \"Enter\" button to close the program");
+
         String line = readString();
         while (!line.equals("")) {
             printResultForOneLine(line);

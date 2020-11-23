@@ -1,9 +1,14 @@
 package ua.com.foxminded.counter;
 
 import org.junit.jupiter.api.Test;
-
+import static org.mockito.Mockito.*;
+import org.mockito.InOrder;
+import ua.com.foxminded.cache.Cache;
+import ua.com.foxminded.facade.CharCounterFacade;
 import ua.com.foxminded.formatter.Formatter;
 import ua.com.foxminded.interfaces.Formatable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,28 +34,82 @@ class CounterTest {
         assertEquals(expectedResult, actualResult);
     }
 
-//    @Test
-//    void cacheSizeShouldBeRightSize() {
+    @Test
+    void dontInteractWithCacheInFirstTime() {
+//        Cache cacheMock = mock(Cache.class);
 //        Counter counter = new Counter();
 //        Formatable formatter = new Formatter();
-//        Cache cache = new Cache();
+//        CharCounterFacade facade = new CharCounterFacade(counter, formatter, cacheMock);
 //
-//        int expectedCacheLength = 8;
+//        String line = "hello";
+//        String expectedResult = "\"h\" - 1\n" +
+//                "\"e\" - 1\n" +
+//                "\"l\" - 2\n" +
+//                "\"o\" - 1\n";
 //
-//        formatter.printResult(counter.createCountedDtoForLine("hello"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("world"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("bread"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("word"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("hello"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine(" hello"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("world "), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("hello"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("hello"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("guinea pig"), cache);
-//        formatter.printResult(counter.createCountedDtoForLine("ello"), cache);
+//        facade.printResultForOneLine(line);
 //
-//        int actualCacheLength = cache.getCacheMap().size();
-//
-//        assertEquals(expectedCacheLength, actualCacheLength);
-//    }
+//        verify(cacheMock, times(0)).getValueFromCache(line);
+    }
+
+
+    @Test
+    void orderInteractionTest() {
+        Cache cacheMock = mock(Cache.class);
+        Counter counterMock = mock(Counter.class);
+        Formatable formatter = mock(Formatter.class);
+
+        String line = "hello";
+        String expectedResult = "\"h\" - 1\n" +
+                                "\"e\" - 1\n" +
+                                "\"l\" - 2\n" +
+                                "\"o\" - 1\n";
+
+        CountedDTO dto = createDto();
+        CharCounterFacade facade = new CharCounterFacade(counterMock, formatter, cacheMock);
+
+        // empty cache order interaction test
+
+        when(counterMock.createCountedDtoForLine(line))
+                .thenReturn(dto);
+        when(cacheMock.isPresented(line))
+                .thenReturn(false);
+        when(formatter.formatResultForLine(dto))
+                .thenReturn(expectedResult);
+
+        facade.printResultForOneLine(line);
+
+        InOrder inOrder = inOrder(counterMock, cacheMock, formatter);
+
+        inOrder.verify(counterMock).createCountedDtoForLine(line);
+        inOrder.verify(cacheMock).isPresented(line);
+        inOrder.verify(formatter).formatResultForLine(dto);
+        inOrder.verify(cacheMock).put(line, expectedResult);
+
+        // not empty cache order interaction test
+
+        when(cacheMock.isPresented(line))
+                .thenReturn(true);
+
+        facade.printResultForOneLine(line);
+
+        inOrder.verify(counterMock).createCountedDtoForLine(line);
+        inOrder.verify(cacheMock).isPresented(line);
+        inOrder.verify(cacheMock).getValueFromCache(line);
+    }
+
+    CountedDTO createDto() {
+        CountedDTO dto = new CountedDTO();
+
+        dto.setLine("hello");
+
+        Map<Character, Integer> resultMap = new LinkedHashMap<>();
+        resultMap.put('h', 1);
+        resultMap.put('e', 1);
+        resultMap.put('l', 2);
+        resultMap.put('0', 1);
+
+        dto.setResultMap(resultMap);
+        return dto;
+    }
 }
