@@ -18,20 +18,24 @@ public class CharCounterFacade {
         this.cache = cache;
     }
 
-    public void printResult() {
+    public void printResultForOneLine(String line) {
         System.out.println("Type any sting and press \"Enter\" button\n" +
                            "Do not type anything and press the \"Enter\" button to close the program");
-        String line = readString();
 
+        CountedDTO dto = counter.createCountedDtoForLine(line);
+        if (cache.isPresented(line)) {
+            System.out.println(cache.getCache().get(line));
+        } else {
+            String result = formatter.formatResultForLine(dto);
+            cache.put(line, result);
+            System.out.println(result);
+        }
+    }
+
+    public void readStringsAndPrintResult() {
+        String line = readString();
         while (!line.equals("")) {
-            CountedDTO dto = counter.createCountedDtoForLine(line);
-            if (cache.isPresented(line)) {
-                System.out.println(cache.getCache().get(line));
-            } else {
-                String result = formatter.formatResultForLine(dto);
-                cache.put(line, result);
-                System.out.println(result);
-            }
+            printResultForOneLine(line);
             line = readString();
         }
     }
