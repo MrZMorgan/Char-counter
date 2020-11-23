@@ -13,7 +13,7 @@ public class Counter {
         return charsUnique;
     }
     
-    private Map<Character, Integer> createResultMap(String line, Set<Character> uniqueChars) {
+    private Map<Character, Integer> countCharacters(String line, Set<Character> uniqueChars) {
         char[] chars = line.toCharArray();
 
         Map<Character, Integer> resultMap = new LinkedHashMap<>();
@@ -37,7 +37,7 @@ public class Counter {
 
         dto.setLine(line);
         Set<Character> charsUnique = getUniqueCharsFromString(line);
-        dto.setResultMap(createResultMap(line, charsUnique));
+        dto.setResultMap(countCharacters(line, charsUnique));
 
         return dto;
     }
