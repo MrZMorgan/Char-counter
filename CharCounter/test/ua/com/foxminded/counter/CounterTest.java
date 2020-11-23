@@ -34,24 +34,43 @@ class CounterTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    @Test
-    void dontInteractWithCacheInFirstTime() {
-//        Cache cacheMock = mock(Cache.class);
-//        Counter counter = new Counter();
-//        Formatable formatter = new Formatter();
-//        CharCounterFacade facade = new CharCounterFacade(counter, formatter, cacheMock);
-//
-//        String line = "hello";
-//        String expectedResult = "\"h\" - 1\n" +
-//                "\"e\" - 1\n" +
-//                "\"l\" - 2\n" +
-//                "\"o\" - 1\n";
-//
-//        facade.printResultForOneLine(line);
-//
-//        verify(cacheMock, times(0)).getValueFromCache(line);
-    }
 
+
+    @Test
+    void interactWithCacheTest() {
+        Cache cacheMock = mock(Cache.class);
+        Counter counter = new Counter();
+        Formatable formatter = new Formatter();
+
+        String line = "hello";
+        String expectedResult = "\"h\" - 1\n" +
+                "\"e\" - 1\n" +
+                "\"l\" - 2\n" +
+                "\"o\" - 1\n";
+
+        CountedDTO dto = createDto();
+        CharCounterFacade facade = new CharCounterFacade(counter, formatter, cacheMock);
+
+        when(cacheMock.isPresented(line))
+                .thenReturn(false);
+
+        facade.printResultForOneLine(line);
+
+        // empty cache
+        verify(cacheMock, times(0)).getValueFromCache(line);
+
+        when(cacheMock.isPresented(line))
+                .thenReturn(true);
+        when(cacheMock.getValueFromCache(line))
+                .thenReturn(expectedResult);
+
+        facade.printResultForOneLine(line);
+        facade.printResultForOneLine(line);
+
+        // not empty cache
+        verify(cacheMock, times(2)).getValueFromCache(line);
+
+    }
 
     @Test
     void orderInteractionTest() {
