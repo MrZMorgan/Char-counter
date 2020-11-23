@@ -1,25 +1,21 @@
 package ua.com.foxminded.facade;
 
+import ua.com.foxminded.Main;
 import ua.com.foxminded.cache.Cache;
 import ua.com.foxminded.counter.CountedDTO;
 import ua.com.foxminded.counter.Counter;
 import ua.com.foxminded.interfaces.Formatable;
-import java.util.Scanner;
+import static ua.com.foxminded.Main.readString;
 
 public class CharCounterFacade {
-    Counter counter;
-    Formatable formatter;
-    Cache cache;
+    private final Counter counter;
+    private final Formatable formatter;
+    private final Cache cache;
 
     public CharCounterFacade(Counter counter, Formatable formatter, Cache cache) {
         this.counter = counter;
         this.formatter = formatter;
         this.cache = cache;
-    }
-
-    public static String readString() {
-        Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine();
     }
 
     public void printResult() {
