@@ -1,5 +1,6 @@
 package ua.com.foxminded.counter;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.*;
 import org.mockito.InOrder;
@@ -13,51 +14,58 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CounterTest {
+    Cache cacheMock;
+    Counter counter;
+    Counter counterMock;
+    Formatable formatter;
+    Formatable formatterMock;
+    String line;
+    String expectedResult;
+    CharCounterFacade facade;
+
+    @BeforeEach
+    void setUp() {
+        cacheMock = mock(Cache.class);
+        counter = new Counter();
+        formatter = new Formatter();
+        counterMock = mock(Counter.class);
+        formatterMock = mock(Formatter.class);
+
+        line = "hello, world!";
+        expectedResult = "\"h\" - 1\n" +
+                         "\"e\" - 1\n" +
+                         "\"l\" - 3\n" +
+                         "\"o\" - 2\n" +
+                         "\",\" - 1\n" +
+                         "\" \" - 1\n" +
+                         "\"w\" - 1\n" +
+                         "\"r\" - 1\n" +
+                         "\"d\" - 1\n" +
+                         "\"!\" - 1\n";
+    }
 
     @Test
-    void createResultForLineShouldCreateRightResult() {
-        String expectedResult = "\"h\" - 1\n" +
-                                "\"e\" - 1\n" +
-                                "\"l\" - 3\n" +
-                                "\"o\" - 2\n" +
-                                "\",\" - 1\n" +
-                                "\" \" - 1\n" +
-                                "\"w\" - 1\n" +
-                                "\"r\" - 1\n" +
-                                "\"d\" - 1\n" +
-                                "\"!\" - 1\n";
-
-        Counter counter = new Counter();
-        Formatable formatter = new Formatter();
-        String actualResult = formatter.formatResultForLine(counter.createCountedDtoForLine("hello, world!"));
-
+    void shouldCreateRightResultForLine() {
+        String actualResult = formatter.formatResultForLine(counter.createCountedDtoForLine(line));
         assertEquals(expectedResult, actualResult);
     }
 
-
-
     @Test
-    void interactWithCacheTest() {
-        Cache cacheMock = mock(Cache.class);
-        Counter counter = new Counter();
-        Formatable formatter = new Formatter();
-
-        String line = "hello";
-        String expectedResult = "\"h\" - 1\n" +
-                "\"e\" - 1\n" +
-                "\"l\" - 2\n" +
-                "\"o\" - 1\n";
-
-        CountedDTO dto = createDto();
-        CharCounterFacade facade = new CharCounterFacade(counter, formatter, cacheMock);
+    void shouldPutResultInCache() {
+        facade = new CharCounterFacade(counter, formatter, cacheMock);
 
         when(cacheMock.isPresented(line))
                 .thenReturn(false);
 
         facade.printResultForOneLine(line);
 
-        // empty cache
         verify(cacheMock, times(0)).getValueFromCache(line);
+        verify(cacheMock, times(1)).put(line, expectedResult);
+    }
+
+    @Test
+    void shouldGetResultFromCache() {
+        facade = new CharCounterFacade(counter, formatter, cacheMock);
 
         when(cacheMock.isPresented(line))
                 .thenReturn(true);
@@ -65,52 +73,48 @@ class CounterTest {
                 .thenReturn(expectedResult);
 
         facade.printResultForOneLine(line);
-        facade.printResultForOneLine(line);
 
-        // not empty cache
-        verify(cacheMock, times(2)).getValueFromCache(line);
+        verify(cacheMock, times(1)).getValueFromCache(line);
+        verify(cacheMock, times(0)).put(line, expectedResult);
 
     }
 
     @Test
-    void orderInteractionTest() {
-        Cache cacheMock = mock(Cache.class);
-        Counter counterMock = mock(Counter.class);
-        Formatable formatter = mock(Formatter.class);
-
-        String line = "hello";
-        String expectedResult = "\"h\" - 1\n" +
-                                "\"e\" - 1\n" +
-                                "\"l\" - 2\n" +
-                                "\"o\" - 1\n";
-
+    void orderInteractionTestForPutResultInCache() {
         CountedDTO dto = createDto();
-        CharCounterFacade facade = new CharCounterFacade(counterMock, formatter, cacheMock);
-
-        // empty cache order interaction test
+        facade = new CharCounterFacade(counterMock, formatterMock, cacheMock);
 
         when(counterMock.createCountedDtoForLine(line))
                 .thenReturn(dto);
         when(cacheMock.isPresented(line))
                 .thenReturn(false);
-        when(formatter.formatResultForLine(dto))
+        when(formatterMock.formatResultForLine(dto))
                 .thenReturn(expectedResult);
 
         facade.printResultForOneLine(line);
 
-        InOrder inOrder = inOrder(counterMock, cacheMock, formatter);
+        InOrder inOrder = inOrder(counterMock, cacheMock, formatterMock);
 
         inOrder.verify(counterMock).createCountedDtoForLine(line);
         inOrder.verify(cacheMock).isPresented(line);
-        inOrder.verify(formatter).formatResultForLine(dto);
+        inOrder.verify(formatterMock).formatResultForLine(dto);
         inOrder.verify(cacheMock).put(line, expectedResult);
+    }
 
-        // not empty cache order interaction test
+    @Test
+    void orderInteractionTestForGetResultFromCache() {
+        CountedDTO dto = createDto();
+        facade = new CharCounterFacade(counterMock, formatterMock, cacheMock);
+
+        when(counterMock.createCountedDtoForLine(line))
+                .thenReturn(dto);
 
         when(cacheMock.isPresented(line))
                 .thenReturn(true);
 
         facade.printResultForOneLine(line);
+
+        InOrder inOrder = inOrder(counterMock, cacheMock, formatterMock);
 
         inOrder.verify(counterMock).createCountedDtoForLine(line);
         inOrder.verify(cacheMock).isPresented(line);
@@ -120,13 +124,18 @@ class CounterTest {
     CountedDTO createDto() {
         CountedDTO dto = new CountedDTO();
 
-        dto.setLine("hello");
+        dto.setLine(line);
 
         Map<Character, Integer> resultMap = new LinkedHashMap<>();
         resultMap.put('h', 1);
         resultMap.put('e', 1);
-        resultMap.put('l', 2);
-        resultMap.put('0', 1);
+        resultMap.put('l', 3);
+        resultMap.put(',', 2);
+        resultMap.put(' ', 1);
+        resultMap.put('w', 1);
+        resultMap.put('r', 1);
+        resultMap.put('d', 1);
+        resultMap.put('!', 1);
 
         dto.setResultMap(resultMap);
         return dto;
