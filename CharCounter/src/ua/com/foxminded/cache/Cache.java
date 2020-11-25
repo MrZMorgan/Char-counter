@@ -12,6 +12,7 @@ public class Cache implements Cacheble {
         return cache;
     }
 
+    @Override
     public Map<Character, Integer> getValueFromCache(String key) {
         return getCache().get(key);
     }
