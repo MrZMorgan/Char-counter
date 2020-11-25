@@ -14,14 +14,15 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CounterTest {
-    Cache cacheMock;
-    Counter counter;
-    Counter counterMock;
-    Formatable formatter;
-    Formatable formatterMock;
-    String line;
-    String expectedResult;
-    CharCounterFacade facade;
+    private Cache cacheMock;
+    private Counter counter;
+    private Counter counterMock;
+    private Formatable formatter;
+    private Formatable formatterMock;
+    private String line;
+    private String expectedResult;
+    private CharCounterFacade facade;
+    private CountedDTO dto;
 
     @BeforeEach
     void setUp() {
@@ -30,6 +31,7 @@ class CounterTest {
         formatter = new Formatter();
         counterMock = mock(Counter.class);
         formatterMock = mock(Formatter.class);
+        dto = createDto();
 
         line = "hello, world!";
         expectedResult = "\"h\" - 1\n" +
@@ -46,7 +48,7 @@ class CounterTest {
 
     @Test
     void shouldCreateRightResultForLine() {
-        String actualResult = formatter.formatResultForLine(counter.createCountedDtoForLine(line));
+        String actualResult = formatter.formatResultForLine(dto.getResultMap());
         assertEquals(expectedResult, actualResult);
     }
 
@@ -60,7 +62,7 @@ class CounterTest {
         facade.printResultForOneLine(line);
 
         verify(cacheMock, times(0)).getValueFromCache(line);
-        verify(cacheMock, times(1)).put(line, expectedResult);
+        verify(cacheMock, times(1)).put(line, dto.getResultMap());
     }
 
     @Test
@@ -70,44 +72,38 @@ class CounterTest {
         when(cacheMock.isPresented(line))
                 .thenReturn(true);
         when(cacheMock.getValueFromCache(line))
-                .thenReturn(expectedResult);
+                .thenReturn(dto.getResultMap());
 
         facade.printResultForOneLine(line);
 
         verify(cacheMock, times(1)).getValueFromCache(line);
-        verify(cacheMock, times(0)).put(line, expectedResult);
-
+        verify(cacheMock, times(0)).put(line, dto.getResultMap());
     }
 
     @Test
     void orderInteractionTestForPutResultInCache() {
-        CountedDTO dto = createDto();
         facade = new CharCounterFacade(counterMock, formatterMock, cacheMock);
 
-        when(counterMock.createCountedDtoForLine(line))
-                .thenReturn(dto);
         when(cacheMock.isPresented(line))
                 .thenReturn(false);
-        when(formatterMock.formatResultForLine(dto))
+        when(counterMock.createCountedDtoForLine(line))
+                .thenReturn(dto);
+        when(formatterMock.formatResultForLine(dto.getResultMap()))
                 .thenReturn(expectedResult);
 
         facade.printResultForOneLine(line);
 
         InOrder inOrder = inOrder(counterMock, cacheMock, formatterMock);
 
-        inOrder.verify(counterMock).createCountedDtoForLine(line);
         inOrder.verify(cacheMock).isPresented(line);
-        inOrder.verify(formatterMock).formatResultForLine(dto);
-        inOrder.verify(cacheMock).put(line, expectedResult);
+        inOrder.verify(counterMock).createCountedDtoForLine(line);
+        inOrder.verify(cacheMock).put(dto.getLine(), dto.getResultMap());
+        inOrder.verify(formatterMock).formatResultForLine(dto.getResultMap());
     }
 
     @Test
     void orderInteractionTestForGetResultFromCache() {
-        CountedDTO dto = createDto();
         facade = new CharCounterFacade(counterMock, formatterMock, cacheMock);
-
-        when(counterMock.createCountedDtoForLine(line))
-                .thenReturn(dto);
 
         when(cacheMock.isPresented(line))
                 .thenReturn(true);
@@ -116,9 +112,9 @@ class CounterTest {
 
         InOrder inOrder = inOrder(counterMock, cacheMock, formatterMock);
 
-        inOrder.verify(counterMock).createCountedDtoForLine(line);
         inOrder.verify(cacheMock).isPresented(line);
         inOrder.verify(cacheMock).getValueFromCache(line);
+        inOrder.verify(formatterMock).formatResultForLine(cacheMock.getValueFromCache(line));
     }
 
     CountedDTO createDto() {
@@ -130,7 +126,8 @@ class CounterTest {
         resultMap.put('h', 1);
         resultMap.put('e', 1);
         resultMap.put('l', 3);
-        resultMap.put(',', 2);
+        resultMap.put('o', 2);
+        resultMap.put(',', 1);
         resultMap.put(' ', 1);
         resultMap.put('w', 1);
         resultMap.put('r', 1);
@@ -140,4 +137,5 @@ class CounterTest {
         dto.setResultMap(resultMap);
         return dto;
     }
+
 }

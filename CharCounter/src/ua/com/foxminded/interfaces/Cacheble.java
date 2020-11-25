@@ -3,8 +3,8 @@ package ua.com.foxminded.interfaces;
 import java.util.Map;
 
 public interface Cacheble {
-    Map<String, String> getCache();
-    void put(String key, String value);
+    Map<String, Map<Character, Integer>> getCache();
+    void put(String key, Map<Character, Integer> value);
     boolean isPresented(String line);
-    String getValueFromCache(String line);
+    Map<Character, Integer> getValueFromCache(String line);
 }

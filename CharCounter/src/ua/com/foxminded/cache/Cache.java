@@ -5,26 +5,26 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Cache implements Cacheble {
-    private final Map<String, String> cache = new LinkedHashMap<>();
+    private final Map<String, Map<Character, Integer>> cache = new LinkedHashMap<>();
 
     @Override
-    public Map<String, String> getCache() {
+    public Map<String, Map<Character, Integer>> getCache() {
         return cache;
     }
 
-    public String getValueFromCache(String key) {
+    public Map<Character, Integer> getValueFromCache(String key) {
         return getCache().get(key);
     }
 
     @Override
-    public void put(String key, String value) {
+    public void put(String key, Map<Character, Integer> value) {
         cache.put(key, value);
     }
 
     @Override
     public boolean isPresented(String line) {
         boolean foundValueInCache = false;
-        for (Map.Entry<String, String> entryCache : cache.entrySet()) {
+        for (Map.Entry<String, Map<Character, Integer>> entryCache : cache.entrySet()) {
             if (entryCache.getKey().equals(line)) {
                 foundValueInCache = true;
                 break;

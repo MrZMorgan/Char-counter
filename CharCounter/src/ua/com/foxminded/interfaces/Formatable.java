@@ -2,6 +2,8 @@ package ua.com.foxminded.interfaces;
 
 import ua.com.foxminded.counter.CountedDTO;
 
+import java.util.Map;
+
 public interface Formatable {
-    String formatResultForLine(CountedDTO dto);
+    String formatResultForLine(Map<Character, Integer> resultMap);
 }

@@ -19,15 +19,14 @@ public class CharCounterFacade {
     }
 
     public void printResultForOneLine(String line) {
-        CountedDTO dto = counter.createCountedDtoForLine(line);
         if (cache.isPresented(line)) {
-            System.out.println(cache.getValueFromCache(line));
-//            System.out.println(cache.getCache().size()); //длина кэша
-        } else {
-            String result = formatter.formatResultForLine(dto);
-            cache.put(line, result);
+            String result = formatter.formatResultForLine(cache.getValueFromCache(line));
             System.out.println(result);
-//            System.out.println(cache.getCache().size()); //длина кэша
+        } else {
+            CountedDTO dto = counter.createCountedDtoForLine(line);
+            cache.put(dto.getLine(), dto.getResultMap());
+            String result = formatter.formatResultForLine(dto.getResultMap());
+            System.out.println(result);
         }
     }
 
