@@ -67,7 +67,7 @@ class CounterTest {
 
     @Test
     void shouldGetResultFromCache() {
-        facade = new CharCounterFacade(counter, formatter, cacheMock);
+        facade = new CharCounterFacade(counterMock, formatter, cacheMock);
 
         when(cacheMock.isPresented(line))
                 .thenReturn(true);
@@ -78,6 +78,7 @@ class CounterTest {
 
         verify(cacheMock, times(1)).getValueFromCache(line);
         verify(cacheMock, times(0)).put(line, dto.getResultMap());
+        verify(counterMock, times(0)).createCountedDtoForLine(line);
     }
 
     @Test
