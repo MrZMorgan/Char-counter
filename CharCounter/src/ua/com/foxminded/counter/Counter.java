@@ -13,8 +13,9 @@ public class Counter {
         return charsUnique;
     }
     
-    private Map<Character, Integer> countCharacters(String line, Set<Character> uniqueChars) {
+    public CountedDTO countCharacters(String line) {
         char[] chars = line.toCharArray();
+        Set<Character> uniqueChars = getUniqueCharsFromString(line);
 
         Map<Character, Integer> resultMap = new LinkedHashMap<>();
         int counter = 0;
@@ -29,15 +30,9 @@ public class Counter {
             counter = 0;
         }
 
-        return resultMap;
-    }
-
-    public CountedDTO createCountedDtoForLine(String line) {
         CountedDTO dto = new CountedDTO();
-
         dto.setLine(line);
-        Set<Character> charsUnique = getUniqueCharsFromString(line);
-        dto.setResultMap(countCharacters(line, charsUnique));
+        dto.setResultMap(resultMap);
 
         return dto;
     }

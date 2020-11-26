@@ -4,7 +4,6 @@ import ua.com.foxminded.cache.Cache;
 import ua.com.foxminded.counter.CountedDTO;
 import ua.com.foxminded.counter.Counter;
 import ua.com.foxminded.interfaces.Formatable;
-
 import static ua.com.foxminded.Main.readString;
 
 public class CharCounterFacade {
@@ -23,7 +22,7 @@ public class CharCounterFacade {
             String result = formatter.formatResultForLine(cache.getValueFromCache(line));
             System.out.println(result);
         } else {
-            CountedDTO dto = counter.createCountedDtoForLine(line);
+            CountedDTO dto = counter.countCharacters(line);
             cache.put(dto.getLine(), dto.getResultMap());
             String result = formatter.formatResultForLine(dto.getResultMap());
             System.out.println(result);

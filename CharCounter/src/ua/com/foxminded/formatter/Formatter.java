@@ -1,7 +1,6 @@
 package ua.com.foxminded.formatter;
 
 import ua.com.foxminded.interfaces.Formatable;
-
 import java.util.Map;
 
 public class Formatter implements Formatable {

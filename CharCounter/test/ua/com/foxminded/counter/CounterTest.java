@@ -78,7 +78,7 @@ class CounterTest {
 
         verify(cacheMock, times(1)).getValueFromCache(line);
         verify(cacheMock, times(0)).put(line, dto.getResultMap());
-        verify(counterMock, times(0)).createCountedDtoForLine(line);
+        verify(counterMock, times(0)).countCharacters(line);
     }
 
     @Test
@@ -87,7 +87,7 @@ class CounterTest {
 
         when(cacheMock.isPresented(line))
                 .thenReturn(false);
-        when(counterMock.createCountedDtoForLine(line))
+        when(counterMock.countCharacters(line))
                 .thenReturn(dto);
         when(formatterMock.formatResultForLine(dto.getResultMap()))
                 .thenReturn(expectedResult);
@@ -97,7 +97,7 @@ class CounterTest {
         InOrder inOrder = inOrder(counterMock, cacheMock, formatterMock);
 
         inOrder.verify(cacheMock).isPresented(line);
-        inOrder.verify(counterMock).createCountedDtoForLine(line);
+        inOrder.verify(counterMock).countCharacters(line);
         inOrder.verify(cacheMock).put(dto.getLine(), dto.getResultMap());
         inOrder.verify(formatterMock).formatResultForLine(dto.getResultMap());
     }
@@ -138,5 +138,4 @@ class CounterTest {
         dto.setResultMap(resultMap);
         return dto;
     }
-
 }
